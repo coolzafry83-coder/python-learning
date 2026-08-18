@@ -1,0 +1,7 @@
+2026-08-15 10:15:22 INFO User admin logged in
+2026-08-15 10:20:11 FAILED Login attempt from 192.168.1.10
+2026-08-15 10:25:45 INFO User john logged in
+2026-08-15 10:30:02 FAILED Login attempt from 192.168.1.10
+2026-08-15 10:35:17 FAILED Login attempt from 192.168.1.15
+2026-08-15 10:40:33 INFO User admin logged in
+2026-08-15 10:45:55 FAILED Login attempt from 192.168.1.10
