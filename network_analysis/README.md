@@ -2,9 +2,9 @@
 
 ## Overview
 
-This project documents practical Windows networking and Wireshark network analysis exercises completed in a controlled learning environment.
+This project documents practical Windows networking, Wireshark packet analysis, and Nmap network enumeration exercises completed in a controlled learning environment.
 
-The objective was to understand how a host communicates on a network, how routing and DNS work, how active and listening connections can be identified, and how network traffic can be inspected using Wireshark.
+The objective was to understand host networking, routing, DNS, active connections, packet-level traffic, TCP communication, network discovery, port states, service identification, and basic network security observations.
 
 ---
 
@@ -78,7 +78,66 @@ Wireshark screenshots are stored in:
 
 ---
 
-## 3. Skills Demonstrated
+## 3. Nmap Network Enumeration
+
+Nmap was used for practical network enumeration against the user's own localhost and VirtualBox Host-Only lab interface.
+
+### Practical Activities
+
+| Task                      | Command                                                    | Purpose                                                      |
+| ------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
+| Basic Scan                | `nmap 127.0.0.1`                                           | Identify common open TCP ports                               |
+| Service Version Detection | `nmap -sV 127.0.0.1`                                       | Identify services and versions                               |
+| Full TCP Scan             | `nmap -p- 127.0.0.1`                                       | Scan all TCP ports from 1-65535                              |
+| Targeted Service Scan     | `nmap -sV -p 135,445,3306,5040,5357,33060 127.0.0.1`       | Perform focused service enumeration                          |
+| OS Detection              | `nmap -O 127.0.0.1`                                        | Identify the probable operating system                       |
+| Default NSE Scripts       | `nmap -sC -sV -p 135,445,3306,5357,33060 127.0.0.1`        | Collect additional service information using default scripts |
+| UDP Scan                  | `nmap -sU -p 53,67,68,123,137,138,161,5353,5355 127.0.0.1` | Examine selected UDP ports                                   |
+| Port State Reasoning      | `nmap -p 135,445,3306,5040,5357,33060 --reason 127.0.0.1`  | Understand why Nmap classified ports as open                 |
+| Network Discovery         | `nmap -sn 192.168.56.0/24`                                 | Discover active hosts on the local VirtualBox lab network    |
+| Lab Service Scan          | `nmap -sV -p 135,139,445,3306,5357 192.168.56.1`           | Identify services on the discovered lab host                 |
+
+### Key Findings
+
+The localhost scan identified several listening services, including:
+
+* Microsoft Windows RPC on port `135`
+* Microsoft-DS/SMB on port `445`
+* MySQL `8.0.46` on port `3306`
+* Microsoft HTTPAPI on port `5357`
+* MySQL X Protocol on port `33060`
+
+The full TCP scan identified additional listening ports, demonstrating why a limited default-port scan may not reveal every listening service.
+
+The UDP scan identified several ports as `open|filtered`, demonstrating that UDP port-state determination can differ from TCP because UDP services may not respond directly to probes.
+
+OS detection identified the system as Microsoft Windows.
+
+The VirtualBox Host-Only network `192.168.56.0/24` was also discovered and analyzed in the controlled lab environment.
+
+### Security Observations
+
+The Nmap results demonstrated the importance of:
+
+* Identifying unnecessary exposed services
+* Understanding listening ports
+* Mapping services to applications
+* Reviewing SMB exposure
+* Checking database service exposure
+* Understanding TCP and UDP port states
+* Performing enumeration before deeper security testing
+
+These observations are for the user's own systems and controlled lab environment.
+
+### Evidence
+
+Nmap screenshots are stored in:
+
+`nmap/`
+
+---
+
+## 4. Skills Demonstrated
 
 * Windows networking fundamentals
 * IPv4 configuration analysis
@@ -93,21 +152,29 @@ Wireshark screenshots are stored in:
 * DNS traffic analysis
 * TCP handshake analysis
 * TLS/HTTPS traffic identification
+* Nmap host discovery
+* TCP and UDP port scanning
+* Service/version enumeration
+* OS detection
+* Basic NSE usage
+* Port-state interpretation
 * Basic network security investigation
 
 ---
 
-## 4. Tools Used
+## 5. Tools Used
 
 * Windows PowerShell
 * Windows Command Prompt
 * Wireshark
+* Nmap
 * Google Chrome
 * Git / GitHub
+* VirtualBox
 
 ---
 
-## 5. Project Structure
+## 6. Project Structure
 
 ```text
 network_analysis/
@@ -129,21 +196,37 @@ network_analysis/
 │   ├── windows_09_netadapter.png
 │   └── windows_10_arp.png
 │
-└── wireshark/
-    ├── README.md
-    ├── wireshark_01_raw_capture.png
-    ├── wireshark_02_dns_filter.png
-    ├── wireshark_03_tls_filter.png
-    ├── wireshark_04_packet_details.png
-    ├── wireshark_05_tcp_syn.png
-    ├── wireshark_06_tcp_handshake.png
-    └── wireshark_07_dns_query.png
+├── wireshark/
+│   ├── README.md
+│   ├── wireshark_01_raw_capture.png
+│   ├── wireshark_02_dns_filter.png
+│   ├── wireshark_03_tls_filter.png
+│   ├── wireshark_04_packet_details.png
+│   ├── wireshark_05_tcp_syn.png
+│   ├── wireshark_06_tcp_handshake.png
+│   └── wireshark_07_dns_query.png
+│
+└── nmap/
+    ├── nmap_01_basic_and_version_scan.png
+    ├── nmap_02_full_tcp_scan.png
+    ├── nmap_03_targeted_service_scan.png
+    ├── nmap_04_os_detection.png
+    ├── nmap_05_default_scripts.png
+    ├── nmap_06_udp_scan.png
+    ├── nmap_07_port_state_reason.png
+    ├── nmap_08_network_discovery.png
+    ├── nmap_09_lab_host_scan.png
+    └── nmap_10_lab_service_version.png
 ```
 
 ---
 
-## 6. Learning Outcome
+## 7. Learning Outcome
 
-This practical project provided hands-on experience with host-level network inspection and packet analysis.
+This practical project provided hands-on experience with host-level network inspection, packet analysis, network enumeration, service identification, and basic security investigation.
 
-The exercises connect basic networking concepts with practical cybersecurity investigation techniques and provide a foundation for the next stage of the cybersecurity roadmap: deeper network analysis and Nmap practical work.
+The project connects fundamental networking concepts with practical cybersecurity techniques and provides a foundation for the next stages of the cybersecurity roadmap:
+
+**Linux Networking → Wireshark → Nmap → Deeper Web Security → Sellable Cybersecurity Services → Client Hunting**
+
+The next planned stage is deeper web security practice followed by preparation of practical, client-facing cybersecurity services.
