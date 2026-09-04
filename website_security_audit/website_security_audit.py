@@ -101,6 +101,11 @@ try:
 except Exception:
     print("\nTLS Certificate: UNABLE TO CHECK")
 
+    issuer_name = "N/A"
+    valid_until = "N/A"
+    days_remaining = "N/A"
+    certificate_status = "UNABLE TO CHECK"
+
 if score == 4 and certificate_status == "VALID":
     risk_level = "LOW"
     overall_assessment = "GOOD"
