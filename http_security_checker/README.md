@@ -1,97 +1,132 @@
-# HTTP Security Header Checker
+﻿# Website Security Assessment Tool
 
-A Python-based cybersecurity tool that checks a website for important HTTP security headers.
+A Python-based security assessment tool that performs a basic, non-destructive check of a website's HTTP security configuration.
+
+The tool analyzes HTTP response headers and provides a simple security score and overall rating.
 
 ## Features
 
 * Checks HTTP response status code
-* Checks Content-Security-Policy
-* Checks X-Frame-Options
-* Checks Strict-Transport-Security
-* Checks X-Content-Type-Options
+* Detects HTTP security headers
 * Shows PRESENT or MISSING status
+* Displays detected header values
+* Explains the security purpose/risk of missing headers
 * Calculates a security header score
-* Handles connection errors
-* Automatically adds HTTPS when needed
+* Provides an overall security rating
+* Follows redirects and shows the final URL
+* Validates the target URL
+* Handles connection and request errors
+* Automatically adds HTTPS when no protocol is provided
+* Uses a browser-like User-Agent
+
+## Security Checks
+
+The following HTTP security headers are assessed:
+
+| Header                    | Security Purpose                                |
+| ------------------------- | ----------------------------------------------- |
+| Content-Security-Policy   | Helps reduce XSS and other code-injection risks |
+| X-Frame-Options           | Helps protect against clickjacking              |
+| Strict-Transport-Security | Enforces HTTPS connections through HSTS         |
+| X-Content-Type-Options    | Helps prevent MIME-type sniffing                |
 
 ## Requirements
 
 * Python 3.x
-* Python Requests library
+* Requests library
 
 Install Requests:
 
-```
+```bash
 pip install requests
 ```
 
 ## Usage
 
-Run the program:
+Run the tool:
 
-```
+```bash
 python http_security_checker.py
 ```
 
-Enter a website URL when prompted:
+Enter a website URL:
 
+```text
+Enter website URL: https://example.com
 ```
-Enter website URL: github.com
-```
 
-The program will automatically add HTTPS if it is not provided.
+If `http://` or `https://` is not provided, the tool automatically uses HTTPS.
 
-## Example Output
+## Example Assessment
 
-```
-Enter website URL: github.com
-
+```text
+=======================================================
+        WEBSITE SECURITY ASSESSMENT
+=======================================================
+Target URL: https://example.com
+Final URL: https://example.com/
 Status Code: 200
 
 Security Headers:
-[+] Content-Security-Policy: PRESENT
-[+] X-Frame-Options: PRESENT
-[+] Strict-Transport-Security: PRESENT
-[+] X-Content-Type-Options: PRESENT
+-------------------------------------------------------
+[-] Content-Security-Policy: MISSING
+    Risk: Helps prevent XSS and code injection attacks
+[-] X-Frame-Options: MISSING
+    Risk: Helps prevent clickjacking attacks
+[-] Strict-Transport-Security: MISSING
+    Risk: Enforces HTTPS connections
+[-] X-Content-Type-Options: MISSING
+    Risk: Helps prevent MIME-type sniffing
 
-Security Score: 4 / 4
+-------------------------------------------------------
+Security Header Score: 0/4 (0%)
+Overall Rating: WEAK
+=======================================================
 ```
 
-## Security Headers Checked
+## Assessment Method
 
-### Content-Security-Policy
+The tool performs a basic HTTP response-header assessment.
 
-Controls which resources a browser is allowed to load and helps reduce certain cross-site scripting risks.
+It does **not** attempt exploitation, authentication bypass, destructive testing, or modification of the target website.
 
-### X-Frame-Options
+A missing security header does not automatically mean that a website is vulnerable. The results should be reviewed in the context of the application's architecture and security requirements.
 
-Helps protect websites against clickjacking by controlling whether a page can be loaded inside a frame.
+## Security Rating
 
-### Strict-Transport-Security
+The current scoring model evaluates four security headers:
 
-Also known as HSTS. It tells browsers to use HTTPS when communicating with the website.
+* **4/4 (100%)** - GOOD
+* **2-3/4 (50-75%)** - NEEDS IMPROVEMENT
+* **0-1/4 (0-25%)** - WEAK
 
-### X-Content-Type-Options
+This score is intended as a quick configuration indicator, not a complete penetration-test rating.
 
-The `nosniff` value helps prevent browsers from incorrectly guessing the content type of a resource.
+## Project Purpose
 
-## Error Handling
+This project demonstrates practical cybersecurity skills including:
 
-The tool handles connection and request errors and displays a user-friendly error message instead of crashing.
-
-## Learning Objectives
-
-This project demonstrates practical use of:
-
-* Python
-* HTTP requests
-* HTTP response headers
-* Lists and loops
-* Conditional statements
+* Python security automation
+* HTTP requests and responses
+* HTTP security headers
+* Web security fundamentals
+* Security configuration assessment
 * Error handling
-* Basic web security concepts
-* Security assessment automation
+* Basic vulnerability identification
+* Security reporting concepts
 
-## Disclaimer
+## Portfolio Evidence
 
-This tool is created for educational and authorized security testing purposes. Only test websites that you own or have permission to assess.
+Assessment evidence is captured from authorized/test targets and can be used to demonstrate the tool's functionality.
+
+Example evidence:
+
+`example_com_security_assessment.png`
+
+## Ethical Use
+
+This tool is intended for educational purposes and authorized security assessments only.
+
+**Only assess websites and systems that you own or have explicit permission to test.**
+
+The author is not responsible for unauthorized or illegal use of this tool.
