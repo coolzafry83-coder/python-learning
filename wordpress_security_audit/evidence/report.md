@@ -73,3 +73,36 @@ The review identified configuration improvements to address before any public de
 Supporting screenshots should be stored in the `evidence/` directory. Each screenshot should identify the relevant check without exposing passwords, session cookies, or other secrets.
 
 **Report status:** Preliminary — not a certification or guarantee of security.
+
+## Final Site Health Findings
+
+**Environment:** Local WordPress installation
+**WordPress version reported:** 7.1.4
+**HTTPS:** Not enabled
+**User accounts:** 1
+**Public registration:** Disabled
+**Search engine indexing:** Discouraged
+
+### Security Findings
+
+1. HTTPS is not enabled in the local environment.
+2. Two inactive plugins and two inactive themes are reported; remove unused components after confirming they are not required.
+3. Default comment status is open; review comment settings and enable appropriate spam controls.
+4. WordPress reports communication with WordPress.org is available.
+
+### Performance Findings
+
+WordPress Site Health reports two critical performance issues:
+
+* One or more required PHP modules are missing.
+* Page cache is not detected, and server response time is slow.
+
+Additional recommendations include updating PHP and the SQL server and enabling opcode caching.
+
+### Scope and Limitations
+
+This assessment covers the reported configuration of a local WordPress lab. It is not a full penetration test or an assessment of a publicly hosted production website. HTTPS and search-engine settings should be evaluated according to the intended deployment environment.
+
+### Conclusion
+
+The review identified configuration and performance improvements. Prioritize appropriate HTTPS configuration before public deployment, remove unused components, review comment settings, and resolve the reported server configuration issues.
