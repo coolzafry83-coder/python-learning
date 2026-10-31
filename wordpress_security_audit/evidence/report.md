@@ -1,108 +1,166 @@
-# WordPress Security Audit Report
+# WordPress Security Configuration Review
 
-**Assessment Type:** Preliminary WordPress Security Configuration Review
+**Assessment Type:** Limited WordPress Security Configuration Review
 **Target:** Local WordPress Lab
-**URL:** `http://localhost/wordpress/`
-**Environment:** Windows / XAMPP / Apache / MariaDB
-**Status:** Preliminary assessment
+**URL:** http://localhost/wordpress/
+**Environment:** Windows 10 / XAMPP / Apache / MariaDB
+**Assessment Status:** Technical checks completed; final evidence verification pending
 
 ## 1. Executive Summary
 
-A preliminary review of a local WordPress installation identified missing HTTP security headers and the absence of HTTPS. WordPress debugging was disabled. Additional validation is required before assigning final risk ratings or making production-readiness decisions.
+A limited security configuration review was conducted on a locally hosted WordPress installation.
 
-## 2. Findings and Recommendations
+The assessment identified missing HTTP security headers, an untrusted HTTPS certificate chain, and the absence of automatic HTTP-to-HTTPS redirection.
 
-### WSA-01 — HTTPS Not Enabled
+Positive security observations included disabled WordPress debugging, disabled public registration, a single administrator account, and removal of inactive themes and plugins.
 
-**Priority:** High if deployed publicly; informational for this local lab
+The assessment was limited to the local laboratory environment. Findings requiring production deployment context are identified accordingly.
 
-**Evidence:** The website was accessed using HTTP, and HTTPS was not available during the check.
+## 2. Findings
 
-**Risk:** On a real network, unencrypted traffic may be intercepted or modified.
+### WSA-01 — HTTPS Certificate Trust and HTTP Redirection
 
-**Recommendation:** Configure TLS with a valid certificate and redirect HTTP traffic to HTTPS before public deployment. Verify the complete site, including login pages and administrative traffic.
+**Priority:** High before public deployment; informational in the local lab.
 
-### WSA-02 — Recommended Security Headers Not Observed
+**Evidence:**
 
-**Priority:** To be determined after deployment-context review
+* HTTPS endpoint returned HTTP 200 OK using curl with certificate verification bypassed.
+* Normal certificate verification failed with SEC_E_UNTRUSTED_ROOT.
+* HTTP endpoint returned HTTP 200 OK instead of redirecting to HTTPS.
+* WordPress Site URL remains configured with HTTP.
 
-**Evidence:** The inspected HTTP response did not show:
+**Impact:**
+An untrusted certificate can prevent browsers and clients from establishing trusted HTTPS connections. Without HTTP-to-HTTPS redirection, visitors may continue using unencrypted HTTP.
 
-* `X-Content-Type-Options`
-* `X-Frame-Options`
-* `Content-Security-Policy`
+**Recommendation:**
+Before public deployment, configure a valid certificate issued by a trusted certificate authority, update WordPress URLs to HTTPS, and enforce HTTP-to-HTTPS redirection.
 
-**Risk:** Their absence may reduce protection against MIME-type confusion, clickjacking, and certain content-injection attacks.
+### WSA-02 — Missing Recommended HTTP Security Headers
 
-**Recommendation:** Configure suitable response headers at the web-server or application layer. Test the policy for compatibility before enforcing Content Security Policy.
+**Priority:** Low / Hardening Recommendation
+
+**Evidence:**
+HTTP and HTTPS response headers did not contain:
+
+* X-Content-Type-Options
+* X-Frame-Options
+* Content-Security-Policy
+
+**Impact:**
+Missing headers reduce browser-side security protections against MIME-type confusion, clickjacking, and certain content-injection scenarios.
+
+**Recommendation:**
+Configure appropriate security headers at the web-server or application layer. Test Content Security Policy compatibility before enforcement.
 
 ### WSA-03 — WordPress Debugging Configuration
 
-**Status:** Pass
+**Status:** PASS
 
-**Evidence:** `WP_DEBUG` is set to `false`.
+**Evidence:**
+WP_DEBUG is explicitly configured as false in wp-config.php.
 
-**Recommendation:** Keep debugging disabled on production systems and ensure errors are not exposed to visitors.
+**Recommendation:**
+Keep debugging disabled on production installations and ensure error messages are not exposed to visitors.
 
-### WSA-04 — Administrator Account Review
+### WSA-04 — Administrator Account and Registration Review
 
-**Status:** Reviewed; further verification recommended
+**Status:** Reviewed — No unexpected accounts observed.
 
-**Evidence:** One user account was observed with the Administrator role.
+**Evidence:**
 
-**Recommendation:** Confirm that administrative access is necessary, use a unique strong password, enable multi-factor authentication where available, and review access periodically.
+* One administrator account observed.
+* Public user registration disabled.
+* Website currently operates locally and is not publicly accessible.
 
-### WSA-05 — Theme and Update Review
+**Recommendation:**
+Use a unique strong administrator password, enable MFA where supported, and periodically review administrator access.
 
-**Status:** Partially reviewed
+### WSA-05 — Inactive Themes and Plugins
 
-**Evidence:** Twenty Twenty-Five was active. Twenty Twenty-Four and Twenty Twenty-Three were also installed. The dashboard reported that plugins were up to date.
+**Status:** Cleanup completed.
 
-**Recommendation:** Verify the installed WordPress core, themes, and plugins are supported and fully patched. Remove unused components only after confirming they are not required.
+**Evidence:**
 
-## 3. Limitations
+* Twenty Twenty-Four and Twenty Twenty-Three were previously installed but inactive.
+* Both inactive themes were removed.
+* Akismet Anti-spam and Hello Dolly were previously installed but inactive.
+* Both inactive plugins were removed.
+* Twenty Twenty-Five remains the active theme.
+* Installed plugins list reports no plugins currently available.
 
-This assessment covered selected configuration checks in a local lab. It did not include a comprehensive vulnerability scan, penetration test, source-code review, or external production-host assessment. Missing headers and HTTPS findings should be validated against the actual deployment environment.
+**Recommendation:**
+Continue reviewing installed components periodically and install only maintained components required by the website.
 
-## 4. Conclusion
+### WSA-06 — WordPress Comment Configuration
 
-The review identified configuration improvements to address before any public deployment. HTTPS and suitable security headers should be prioritized for a production environment. Further testing is needed before the site can be considered security-assessed.
+**Status:** Informational Observation
 
-## 5. Evidence
+**Evidence:**
+Allow people to submit comments on new posts is enabled.
 
-Supporting screenshots should be stored in the `evidence/` directory. Each screenshot should identify the relevant check without exposing passwords, session cookies, or other secrets.
+**Impact:**
+Comments can introduce spam and moderation requirements if the website is publicly accessible.
 
-**Report status:** Preliminary — not a certification or guarantee of security.
+**Recommendation:**
+For a future business website, enable comments only if required. Apply moderation and suitable anti-spam protection.
 
-## Final Site Health Findings
+### WSA-07 — Server Information Disclosure
 
-**Environment:** Local WordPress installation
-**WordPress version reported:** 7.1.4
-**HTTPS:** Not enabled
-**User accounts:** 1
-**Public registration:** Disabled
-**Search engine indexing:** Discouraged
+**Priority:** Low / Hardening Recommendation
 
-### Security Findings
+**Evidence:**
+HTTP response headers disclose:
 
-1. HTTPS is not enabled in the local environment.
-2. Two inactive plugins and two inactive themes are reported; remove unused components after confirming they are not required.
-3. Default comment status is open; review comment settings and enable appropriate spam controls.
-4. WordPress reports communication with WordPress.org is available.
+* Apache/2.4.58
+* OpenSSL/3.1.3
+* PHP/8.2.12
+* X-Powered-By: PHP/8.2.12
 
-### Performance Findings
+**Impact:**
+Technology version disclosure provides additional information about the server environment.
 
-WordPress Site Health reports two critical performance issues:
+**Recommendation:**
+Consider reducing unnecessary server and PHP version disclosure in a production deployment.
 
-* One or more required PHP modules are missing.
-* Page cache is not detected, and server response time is slow.
+## 3. Additional Site Health Observations
 
-Additional recommendations include updating PHP and the SQL server and enabling opcode caching.
+WordPress Site Health previously reported:
 
-### Scope and Limitations
+**Performance and Server Configuration:**
 
-This assessment covers the reported configuration of a local WordPress lab. It is not a full penetration test or an assessment of a publicly hosted production website. HTTPS and search-engine settings should be evaluated according to the intended deployment environment.
+* Required PHP module(s) missing.
+* Page caching not detected and server response time reported as slow.
+* PHP update recommended.
+* SQL server update recommended.
+* Opcode caching disabled.
 
-### Conclusion
+These are operational and performance recommendations. They have not been independently validated as security vulnerabilities and are not assigned security risk ratings in this assessment.
 
-The review identified configuration and performance improvements. Prioritize appropriate HTTPS configuration before public deployment, remove unused components, review comment settings, and resolve the reported server configuration issues.
+WordPress reported version 7.1.4. Its current support and patch status have not been independently verified.
+
+## 4. Scope and Limitations
+
+This assessment covered selected WordPress configuration checks in a local Windows/XAMPP laboratory.
+
+The assessment did not include:
+
+* Comprehensive vulnerability scanning.
+* Full penetration testing.
+* Source-code review.
+* Exploitation testing.
+* External network testing.
+* Public production hosting assessment.
+
+Findings must be reassessed in the actual deployment environment before public launch.
+
+## 5. Conclusion
+
+The review identified several security hardening improvements, particularly certificate trust, HTTPS enforcement, and missing browser security headers.
+
+Positive observations included disabled debugging, restricted user registration, a single administrator account, and removal of inactive themes and plugins.
+
+The local installation should not be considered production-ready solely on the basis of this assessment.
+
+**Final Report Status:** Limited WordPress Security Configuration Review — findings documented; evidence verification pending.
+
+**Assessment Disclaimer:** This report is not a full penetration test, security certification, or guarantee that the website is free from vulnerabilities.
